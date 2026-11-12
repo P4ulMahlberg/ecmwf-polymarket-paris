@@ -1,0 +1,1 @@
+https://aviationweather.gov/api/data/metar?ids=LFPB&format=raw&date=2026-11-13T02:00:00Z&hours=30

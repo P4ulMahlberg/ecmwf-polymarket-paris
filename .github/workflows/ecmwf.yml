@@ -1,0 +1,26 @@
+# Saves every ECMWF ensemble run to data/ecmwf/ and commits it.
+# Open-Meteo has each run ~10.5 h after its start time, so fetch ~11 h after 00/06/12/18 UTC.
+name: ecmwf-ensemble
+on:
+  schedule:
+    - cron: "30 5,11,17,23 * * *"
+  workflow_dispatch: # "Run workflow" button on GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python ecmwf_ens.py
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add data/ecmwf
+          git diff --cached --quiet || (git commit -m "ECMWF run $(ls data/ecmwf | tail -1)" && git push)

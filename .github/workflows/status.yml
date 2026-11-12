@@ -19,10 +19,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           yesterday=$(date -u -d yesterday +%Y%m%d)
-          got=$(ls data/ecmwf | grep -c "run_$yesterday" || true)
-          total=$(ls data/ecmwf | wc -l)
-          days=$(ls data/ecmwf | cut -c5-12 | sort -u | wc -l)
-          last=$(ls data/ecmwf | tail -1)
-          if [ "$got" -eq 4 ]; then icon="✅"; else icon="⚠️"; fi
-          gh issue comment 1 --body "$icon yesterday ($yesterday): $got/4 runs saved
-          total: $total runs over $days days, latest: $last"
+          body=""
+          for city in $(ls data/ecmwf); do
+            got=$(ls data/ecmwf/$city | grep -c "run_$yesterday" || true)
+            total=$(ls data/ecmwf/$city | wc -l)
+            days=$(ls data/ecmwf/$city | cut -c5-12 | sort -u | wc -l)
+            last=$(ls data/ecmwf/$city | tail -1)
+            if [ "$got" -eq 4 ]; then icon="✅"; else icon="⚠️"; fi
+            body="$body$icon $city yesterday ($yesterday): $got/4 runs, total $total runs over $days days, latest $last
+          "
+          done
+          gh issue comment 1 --body "$body"

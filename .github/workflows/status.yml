@@ -20,13 +20,13 @@ jobs:
         run: |
           yesterday=$(date -u -d yesterday +%Y%m%d)
           body=""
-          for city in $(ls data/ecmwf); do
-            got=$(ls data/ecmwf/$city | grep -c "run_$yesterday" || true)
-            total=$(ls data/ecmwf/$city | wc -l)
-            days=$(ls data/ecmwf/$city | cut -c5-12 | sort -u | wc -l)
-            last=$(ls data/ecmwf/$city | tail -1)
+          for dir in data/ecmwf/* data/aifs/*; do
+            got=$(ls $dir | grep -c "run_$yesterday" || true)
+            total=$(ls $dir | wc -l)
+            days=$(ls $dir | cut -c5-12 | sort -u | wc -l)
+            last=$(ls $dir | tail -1)
             if [ "$got" -eq 4 ]; then icon="✅"; else icon="⚠️"; fi
-            body="$body$icon $city yesterday ($yesterday): $got/4 runs, total $total runs over $days days, latest $last
+            body="$body$icon ${dir#data/} yesterday ($yesterday): $got/4 runs, total $total runs over $days days, latest $last
           "
           done
           gh issue comment 1 --body "$body"

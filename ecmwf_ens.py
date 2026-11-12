@@ -27,6 +27,8 @@ for folder, model in MODELS.items():
     # Which run Open-Meteo is serving (needed to know the lead time later).
     meta = requests.get(f"https://ensemble-api.open-meteo.com/data/{model}/static/meta.json", timeout=30).json()
     run = dt.datetime.fromtimestamp(meta["last_run_initialisation_time"], dt.UTC)
+    # when the run was first downloadable = earliest possible buy time
+    available = dt.datetime.fromtimestamp(meta["last_run_availability_time"], dt.UTC)
 
     for city, (lat, lon, tz) in POINTS.items():
         out = Path("data") / folder / city / run.strftime("run_%Y%m%dT%HZ")
@@ -44,6 +46,9 @@ for folder, model in MODELS.items():
         hourly = pd.DataFrame(r.json()["hourly"])  # one column per member
         hourly["time"] = pd.to_datetime(hourly["time"])
         daily_max = hourly.groupby(hourly["time"].dt.date).max(numeric_only=True)
+        for table in (hourly, daily_max):
+            table.insert(0, "run_utc", run.strftime("%Y-%m-%d %H:%M"))
+            table.insert(1, "available_utc", available.strftime("%Y-%m-%d %H:%M"))
 
         out.mkdir(parents=True, exist_ok=True)
         hourly.to_csv(out / "hourly.csv", index=False)

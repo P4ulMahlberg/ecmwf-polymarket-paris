@@ -1,9 +1,10 @@
 # Saves every ECMWF ensemble run to data/ecmwf/ and commits it.
-# Open-Meteo has each run ~10.5 h after its start time, so fetch ~11 h after 00/06/12/18 UTC.
+# Checks every 30 min; saves a run as soon as Open-Meteo has it, even if it is late.
+# (minutes 7/37 because GitHub delays jobs scheduled on the full hour)
 name: ecmwf-ensemble
 on:
   schedule:
-    - cron: "30 5,11,17,23 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch: # "Run workflow" button on GitHub
 
 permissions:

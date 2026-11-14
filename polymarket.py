@@ -1,4 +1,4 @@
-"""Fetch Polymarket "Highest temperature in <city>" markets for Paris and London: current
+"""Fetch Polymarket "Highest temperature in <city>" markets for Paris, London, Munich: current
 price per bucket and hourly price history. Read-only public endpoints, no key.
 
 Usage: python polymarket.py                        today .. today+2
@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 
 
-CITIES = ["paris", "london"]
+CITIES = ["paris", "london", "munich"]
 
 
 def fetch_day(city, day):

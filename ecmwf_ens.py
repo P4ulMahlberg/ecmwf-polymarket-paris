@@ -17,10 +17,13 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-# Grid point that best matched each settlement station's daily max (ECMWF 0.25 deg, Nov 2025 - Nov 2026).
+# station: settlement airport, used for the 2 km icon_d2 grid.
+# ecmwf_grid: ECMWF 0.25 deg grid point that best matched the station's daily max
+# (Nov 2025 - Nov 2026), used for ecmwf and aifs.
 POINTS = {
-    "paris": (49.0, 2.25, "Europe/Paris"),     # station LFPB, Le Bourget
-    "london": (51.5, 0.25, "Europe/London"),   # station EGLC, London City
+    "paris":  {"station": (48.9694, 2.4414), "ecmwf_grid": (49.0, 2.25), "tz": "Europe/Paris"},   # LFPB
+    "london": {"station": (51.5053, 0.0553), "ecmwf_grid": (51.5, 0.25), "tz": "Europe/London"},  # EGLC
+    "munich": {"station": (48.3538, 11.7861), "ecmwf_grid": (48.5, 12.0), "tz": "Europe/Berlin"}, # EDDM
 }
 MODELS = {  # folder name: Open-Meteo model name
     "ecmwf": "ecmwf_ifs025_ensemble",
@@ -36,7 +39,9 @@ for folder, model in MODELS.items():
         run = dt.datetime.fromtimestamp(meta["last_run_initialisation_time"], dt.UTC)
         available = dt.datetime.fromtimestamp(meta["last_run_availability_time"], dt.UTC)
 
-    for city, (lat, lon, tz) in POINTS.items():
+    for city, p in POINTS.items():
+        lat, lon = p["station"] if folder == "icon_d2" else p["ecmwf_grid"]
+        tz = p["tz"]
         r = requests.get("https://ensemble-api.open-meteo.com/v1/ensemble", params={
             "latitude": lat, "longitude": lon, "hourly": "temperature_2m",
             "models": model, "forecast_days": DAYS,

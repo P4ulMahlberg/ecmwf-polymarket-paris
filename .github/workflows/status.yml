@@ -20,13 +20,15 @@ jobs:
         run: |
           yesterday=$(date -u -d yesterday +%Y%m%d)
           body=""
-          for dir in data/ecmwf/* data/aifs/*; do
+          for dir in data/*/*; do
+            [ "${dir#data/polymarket}" != "$dir" ] && continue
+            want=4; [ "${dir#data/icon_d2}" != "$dir" ] && want=8  # ICON-D2 runs every 3 h
             got=$(ls $dir | grep -c "run_$yesterday" || true)
             total=$(ls $dir | wc -l)
             days=$(ls $dir | cut -c5-12 | sort -u | wc -l)
             last=$(ls $dir | tail -1)
-            if [ "$got" -eq 4 ]; then icon="✅"; else icon="⚠️"; fi
-            body="$body$icon ${dir#data/} yesterday ($yesterday): $got/4 runs, total $total runs over $days days, latest $last
+            if [ "$got" -eq "$want" ]; then icon="✅"; else icon="⚠️"; fi
+            body="$body$icon ${dir#data/} yesterday ($yesterday): $got/$want runs, total $total runs over $days days, latest $last
           "
           done
           gh issue comment 1 --body "$body"

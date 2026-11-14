@@ -22,6 +22,7 @@ jobs:
           body=""
           for dir in data/*/*; do
             [ "${dir#data/polymarket}" != "$dir" ] && continue
+            [ "${dir#data/orderbook}" != "$dir" ] && continue
             want=4; [ "${dir#data/icon_d2}" != "$dir" ] && want=8  # ICON-D2 runs every 3 h
             got=$(ls $dir | grep -c "run_$yesterday" || true)
             total=$(ls $dir | wc -l)

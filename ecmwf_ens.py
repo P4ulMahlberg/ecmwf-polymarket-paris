@@ -17,13 +17,16 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-# station: settlement airport, used for the 2 km icon_d2 grid.
+# station: position of the weather station whose METAR settles the market, used for the
+#   2 km icon_d2 grid. Paris: Meteo-France station 95088001 (Le Bourget). Munich: DWD
+#   station 01262 (Muenchen-Flughafen). London: no open Met Office station list found,
+#   so airport coordinates (EGLC).
 # ecmwf_grid: ECMWF 0.25 deg grid point that best matched the station's daily max
-# (Nov 2025 - Nov 2026), used for ecmwf and aifs.
+#   (Nov 2025 - Nov 2026), used for ecmwf and aifs.
 POINTS = {
-    "paris":  {"station": (48.9694, 2.4414), "ecmwf_grid": (49.0, 2.25), "tz": "Europe/Paris"},   # LFPB
+    "paris":  {"station": (48.9673, 2.4277), "ecmwf_grid": (49.0, 2.25), "tz": "Europe/Paris"},   # LFPB
     "london": {"station": (51.5053, 0.0553), "ecmwf_grid": (51.5, 0.25), "tz": "Europe/London"},  # EGLC
-    "munich": {"station": (48.3538, 11.7861), "ecmwf_grid": (48.5, 12.0), "tz": "Europe/Berlin"}, # EDDM
+    "munich": {"station": (48.3477, 11.8134), "ecmwf_grid": (48.5, 12.0), "tz": "Europe/Berlin"}, # EDDM
 }
 MODELS = {  # folder name: Open-Meteo model name
     "ecmwf": "ecmwf_ifs025_ensemble",

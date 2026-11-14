@@ -1,11 +1,12 @@
 # Saves every ECMWF ensemble run to data/ecmwf/ and commits it.
-# Checks every 2 h. Each run stays on Open-Meteo ~6 h until the next replaces it, so no
-# run is missed even if late. The exact online time is logged in available_utc.
-# (minute 7 because GitHub delays jobs scheduled on the full hour)
+# Checks every 30 min. GitHub skips many scheduled runs, so frequent checks keep the gaps
+# shorter than the ~6 h a run stays on Open-Meteo. The exact online time is logged in
+# available_utc. ~1,450 of the 2,000 free minutes per month.
+# (minutes 7/37 because GitHub delays jobs scheduled on the full hour)
 name: ecmwf-ensemble
 on:
   schedule:
-    - cron: "7 */2 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch: # "Run workflow" button on GitHub
 
 permissions:

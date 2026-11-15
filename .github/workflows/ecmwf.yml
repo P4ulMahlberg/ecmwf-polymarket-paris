@@ -1,31 +1,40 @@
-# Saves every ECMWF ensemble run to data/ecmwf/ and commits it.
-# Checks every 30 min. GitHub skips many scheduled runs, so frequent checks keep the gaps
-# shorter than the ~6 h a run stays on Open-Meteo. The exact online time is logged in
-# available_utc. ~1,450 of the 2,000 free minutes per month.
-# (minutes 7/37 because GitHub delays jobs scheduled on the full hour)
+# Saves every new ensemble run (data/ecmwf, aifs, icon_d2) and an order book snapshot.
+# GitHub drops most scheduled triggers, so each job loops itself: fetch, save, push,
+# wait 15 min, for ~5 h 20 min (jobs may run max 6 h). A new job is triggered every
+# 2 h and waits in the queue (concurrency) until the running one ends.
+# Needs a PUBLIC repo (unlimited minutes). Before making the repo private again,
+# go back to a single short run per trigger, or the 2,000 free minutes are gone in ~1.5 days.
 name: ecmwf-ensemble
 on:
   schedule:
-    - cron: "7,37 * * * *"
+    - cron: "7 */2 * * *"
   workflow_dispatch: # "Run workflow" button on GitHub
 
 permissions:
   contents: write
 
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: python ecmwf_ens.py
-      - run: python orderbook.py
-        continue-on-error: true # a Polymarket hiccup must not block saving the forecasts
       - run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add data/ecmwf data/aifs data/icon_d2 data/orderbook
-          git diff --cached --quiet || (git commit -m "Save new ensemble runs and order book" && git push)
+          end=$((SECONDS + 320*60))
+          while [ $SECONDS -lt $end ]; do
+            python ecmwf_ens.py || echo "ecmwf_ens.py failed"
+            python orderbook.py || echo "orderbook.py failed"
+            git add data/ecmwf data/aifs data/icon_d2 data/orderbook
+            git diff --cached --quiet || (git commit -q -m "Save new ensemble runs and order book" && git pull -q --rebase && git push -q)
+            sleep 900
+          done

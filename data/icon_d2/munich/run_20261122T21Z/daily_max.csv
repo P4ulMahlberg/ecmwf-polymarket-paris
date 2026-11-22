@@ -1,0 +1,4 @@
+time,run_utc,available_utc,temperature_2m,temperature_2m_member01,temperature_2m_member02,temperature_2m_member03,temperature_2m_member04,temperature_2m_member05,temperature_2m_member06,temperature_2m_member07,temperature_2m_member08,temperature_2m_member09,temperature_2m_member10,temperature_2m_member11,temperature_2m_member12,temperature_2m_member13,temperature_2m_member14,temperature_2m_member15,temperature_2m_member16,temperature_2m_member17,temperature_2m_member18,temperature_2m_member19
+2026-11-22,2026-11-22 21:00,2026-11-22 22:57,4.0,3.9,3.5,4.0,3.9,4.0,3.9,4.3,3.8,4.1,3.5,3.7,2.9,3.8,3.5,3.8,4.1,3.6,4.3,3.9
+2026-11-23,2026-11-22 21:00,2026-11-22 22:57,2.0,1.4,1.7,1.3,0.1,1.8,0.8,1.1,1.9,1.5,1.3,2.2,-0.2,1.1,1.1,1.0,2.1,1.2,1.8,2.4
+2026-11-24,2026-11-22 21:00,2026-11-22 22:57,0.1,-0.6,1.7,2.2,1.2,1.3,1.4,1.1,1.2,1.5,1.3,2.1,1.0,1.8,1.9,1.0,1.3,1.2,1.6,1.0
